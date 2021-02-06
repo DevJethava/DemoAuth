@@ -36,9 +36,9 @@
             </intent-filter>
         </activity>
 
-
         <activity
             android:name=".activity.ShowUserActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SignupActivity"

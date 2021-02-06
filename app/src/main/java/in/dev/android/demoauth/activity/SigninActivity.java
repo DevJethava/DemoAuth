@@ -301,6 +301,9 @@ public class SigninActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
+            mGoogleSignInClient.signOut();
+            LoginManager.getInstance().logOut();
+            ApplicationConfig.preference.clearPreference();
             Toast.makeText(SigninActivity.this, "This User is Not Register, Please Register First.", Toast.LENGTH_LONG).show();
         }
 
@@ -312,7 +315,7 @@ public class SigninActivity extends AppCompatActivity {
 
     public void getAllUserData(String email) {
         userList.clear();
-        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();

@@ -1,5 +1,13 @@
 package in.dev.android.demoauth.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -10,20 +18,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-import android.widget.Toolbar;
-
-import com.facebook.ProfileTracker;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
+import com.facebook.CallbackManager;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,12 +53,20 @@ public class ShowUserActivity extends AppCompatActivity implements RecyclerItemT
     List<String> userKey;
 
     UserAdapter adapter;
+    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityShowUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference(Provider.USER_ACCESS_KEY);
@@ -82,7 +89,7 @@ public class ShowUserActivity extends AppCompatActivity implements RecyclerItemT
     private void getUserList() {
         userList.clear();
         userKey.clear();
-        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
@@ -168,7 +175,8 @@ public class ShowUserActivity extends AppCompatActivity implements RecyclerItemT
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ApplicationConfig.preference.clearPreference();
-
+                mGoogleSignInClient.signOut();
+                LoginManager.getInstance().logOut();
                 startActivity(new Intent(ShowUserActivity.this, SigninActivity.class));
                 finish();
             }

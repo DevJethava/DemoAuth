@@ -177,7 +177,7 @@ public class SignupActivity extends AppCompatActivity {
                                     }
 
                                     if (Utils.isNetworkAvailable(SignupActivity.this) && !TextUtils.isEmpty(email)) {
-                                        loginAndGo(email);
+                                        loginAndGo(email, "fb");
                                     } else {
                                         Toast.makeText(SignupActivity.this, "Network Error !", Toast.LENGTH_SHORT).show();
                                     }
@@ -243,7 +243,7 @@ public class SignupActivity extends AppCompatActivity {
                     assert user != null;
                     Utils.printLog(TAG, "Email : " + user.getEmail() + " Name :" + user.getDisplayName());
 
-                    loginAndGo(user.getEmail());
+                    loginAndGo(user.getEmail(), "google");
 
                 } else {
                     Utils.printLog(task.getException());
@@ -252,11 +252,11 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void loginAndGo(String email) {
-        getAllUserData(email);
+    private void loginAndGo(String email, String loginType) {
+        getAllUserData(email, loginType);
     }
 
-    private void checkUserExistence(String email) {
+    private void checkUserExistence(String email, String loginType) {
         Utils.printLog("SIZE", userList.size() + " SiZe");
         int i = 0;
         for (User user : userList) {
@@ -275,8 +275,19 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(SignupActivity.this, "Now you can Login.", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(SignupActivity.this, "This User is All ready Registered, Please Sign-In.", Toast.LENGTH_LONG).show();
+
+            if (loginType.equals("fb")) {
+
+                LoginManager.getInstance().logOut();
+            } else if (loginType.equals("google")) {
+                mGoogleSignInClient.signOut();
+            }
+
+            ApplicationConfig.preference.clearPreference();
+            Toast.makeText(this, "User Already Registered.", Toast.LENGTH_SHORT).show();
         }
+
+        Utils.printLog("MACHES", i + " Size");
 
 
     }
@@ -295,6 +306,7 @@ public class SignupActivity extends AppCompatActivity {
                             mFirebaseDatabase.child(userId).setValue(user);
 
                             Toast.makeText(SignupActivity.this, "Now you can Login.", Toast.LENGTH_SHORT).show();
+                            ApplicationConfig.preference.clearPreference();
                             finish();
                         }
                     }
@@ -308,15 +320,16 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnFailureListener(SignupActivity.this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        ApplicationConfig.preference.clearPreference();
                         Toast.makeText(SignupActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
         Utils.hideProgressDialog();
     }
 
-    public void getAllUserData(String email) {
+    public void getAllUserData(String email, String loginType) {
         userList.clear();
-        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 userList.clear();
@@ -325,7 +338,7 @@ public class SignupActivity extends AppCompatActivity {
                     userList.add(user);
                 }
 
-                checkUserExistence(email);
+                checkUserExistence(email, loginType);
             }
 
             @Override

@@ -51,7 +51,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
         userList.remove(position);
         userKey.remove(position);
         notifyItemRemoved(position);
-        notifyDataSetChanged();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
