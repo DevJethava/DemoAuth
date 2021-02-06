@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Demo Auth</string>
+    <string name="label_ok">OK</string>
+    <string name="label_login">Login</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="label_signup_msg">Don\'t Have Account? Sign up</string>
+    <string name="hint_fname">First name</string>
+    <string name="hint_lname">Last Name</string>
+    <string name="label_signup">Sign up</string>
+    <string name="label_signin_msg">Have Account? Signin</string>
+    <string name="label_or">OR</string>
+    <string name="label_delete">DELETE</string>
+    <string name="label_logout">Logout</string>
+    <string name="label_cancel" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="label_logout_message">Are you sure you wants to Logout?</string>
+
+    <!--  For Facebook  -->
+    <string name="facebook_app_id">459539255076362</string>
+    <string name="fb_login_protocol_scheme">fb459539255076362</string>
+
+</resources>
